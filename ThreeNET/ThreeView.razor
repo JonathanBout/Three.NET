@@ -1,0 +1,55 @@
+﻿@using Microsoft.JSInterop;
+@inject ThreeNET three
+@implements IAsyncDisposable
+<h3>ThreeView</h3>
+<div @ref=threeElement>
+	test
+</div>
+@code {
+	private ThreeCamera? Camera { get; set; }
+	private ThreeScene? Scene { get; set; }
+	private ThreeRenderer? Renderer { get; set; }
+	private ThreeMesh? BoxMesh { get; set; }
+
+	private ElementReference threeElement;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			Scene = await three.CreateScene();
+			Camera = await three.CreateCamera(75, 1, 0.1, 1000);
+			Renderer = await three.CreateRenderer();
+			await Renderer.SetSize(400, 400);
+			await Renderer.PlaceInDOM(threeElement);
+
+			var options = new ThreeMeshMaterialOptions
+				{
+					Color = 0xfcc43e,
+				};
+
+			await using var box = await three.CreateBoxGeometry(1, 1, 1);
+			await using var material = await three.CreateMaterial(options);
+
+			BoxMesh = await three.CreateMesh(box, material);
+			await Scene.Add(BoxMesh);
+			await Camera.SetPosition(z: 5);
+			await three.RegisterAnimateFunction(Animate);
+		}
+	}
+
+	public async Task Animate()
+	{
+		await Renderer!.Render(Scene!, Camera!);
+		var helper = await three.Helper();
+		await BoxMesh!.Rotate(x: Math.PI / 100, y: Math.PI / 80);
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		await (Camera?.DisposeAsync() ?? ValueTask.CompletedTask);
+		await (Scene?.DisposeAsync() ?? ValueTask.CompletedTask);
+		await (Renderer?.DisposeAsync() ?? ValueTask.CompletedTask);
+		await (BoxMesh?.DisposeAsync() ?? ValueTask.CompletedTask);
+	}
+}
