@@ -1,4 +1,4 @@
-import * as THREE from "./threeJS/package/build/three.module.js"
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.module.min.js"
 
 export function create(className, ...parameters) {
 	return new THREE[className](...parameters)
