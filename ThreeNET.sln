@@ -9,6 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeNET.Test.Server", "Thr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreeNET.Test.WASM", "ThreeNET.Test.WASM\ThreeNET.Test.WASM.csproj", "{6AF85B80-86E1-4F1C-AEE1-2B3BFFE672F8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{560A1E5A-EC2E-4712-A262-308E3682B783}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C801BA24-F375-4B5A-8884-FC54D733F88D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +37,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0BB53DCA-165A-42A5-87EC-D1898DA261D6} = {C801BA24-F375-4B5A-8884-FC54D733F88D}
+		{6AF85B80-86E1-4F1C-AEE1-2B3BFFE672F8} = {C801BA24-F375-4B5A-8884-FC54D733F88D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BF6E9129-4482-4478-A1AB-F6267FA0A0A6}

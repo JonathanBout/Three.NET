@@ -29,6 +29,7 @@ export async function helperRequestAnimationFrame(dotnetObject, identifier, subs
 	requestAnimationFrame(async () => {
 		await helperRequestAnimationFrame(dotnetObject, identifier, false);
 	});
+	console.log('HERE');
 	await dotnetObject.invokeMethodAsync(identifier);
 }
 export function clearAnimationFrameRequests() {

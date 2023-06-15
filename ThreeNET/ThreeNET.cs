@@ -1,5 +1,6 @@
 using Microsoft.JSInterop;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using ThreeNET.Data;
 using ThreeNET.Objects;
 using ThreeNET.Objects.Geometry;
@@ -10,6 +11,8 @@ namespace ThreeNET
 {
 	internal class ThreeNET : ThreeHelperReferenceHolder
 	{
+		readonly List<DotNetObjectReference<InteropActionExecutor>> executors = new();
+		private static Regex ClassnameReplacementRegex { get; } = new("^Three", RegexOptions.Compiled);
 		private readonly IJSRuntime javaScript;
 		public ThreeNET(IJSRuntime jsRuntime)
 			: base(jsRuntime)
@@ -17,40 +20,49 @@ namespace ThreeNET
 			javaScript = jsRuntime;
 		}
 
+		public async Task<T> Create<T>(params object[] additionalArguments) where T : ThreeObject
+		{
+			var type = typeof(T);
+			var helper = await Helper();
+			var name = ClassnameReplacementRegex.Replace(type.Name, "");
+			try
+			{
+				var objectRef = await helper.InvokeAsync<IJSObjectReference>("create", name, additionalArguments);
+				return (T)Activator.CreateInstance(type, new object[] { objectRef, javaScript })!;
+			}catch (Exception ex)
+			when (ex is JSException or NullReferenceException)
+			{
+				throw new InvalidOperationException(
+					"You might have chosen an invalid class, as trying to create a THREE." +
+					$"{name} did not return a valid object.");
+			}
+		}
+
 		public async Task<ThreeScene> CreateScene()
 		{
-			var helper = await Helper();
-			return new ThreeScene(await helper.InvokeAsync<IJSObjectReference>("create", "Scene"), javaScript);
+			return await Create<ThreeScene>();
 		}
 
-		public async Task<ThreeCamera> CreateCamera(int fieldOfView, int aspectRatio, double nearClip, decimal farClip)
-		{
-			var helper = await Helper();
-			return new ThreeCamera(await helper.InvokeAsync<IJSObjectReference>("create", "PerspectiveCamera", fieldOfView, aspectRatio, nearClip, farClip), javaScript);
-		}
+		public Task<ThreePerspectiveCamera> CreateCamera(int fieldOfView, int aspectRatio, double nearClip, decimal farClip)
+			=> Create<ThreePerspectiveCamera>(fieldOfView, aspectRatio, nearClip, farClip);
 
-		public async Task<ThreeRenderer> CreateRenderer()
-		{
-			var helper = await Helper();
-			var renderer = new ThreeRenderer(await helper.InvokeAsync<IJSObjectReference>("create", "WebGLRenderer"), javaScript);
-			await renderer.SetSize(400, 400);
-			return renderer;
-		}
+		public Task<ThreeWebGLRenderer> CreateRenderer()
+			=> Create<ThreeWebGLRenderer>();
 
-		public async Task<ThreeBoxGeometry> CreateBoxGeometry(int width, int height, int depth)
+		public Task<ThreeBoxGeometry> CreateBoxGeometry(int width, int height, int depth)
+			=> Create<ThreeBoxGeometry>(width, height, depth);
+		public Task<ThreeMeshBasicMaterial> CreateMaterial(ThreeMeshMaterialOptions options)
+			=> Create<ThreeMeshBasicMaterial>(options);
+		public Task<ThreeMesh> CreateMesh(ThreeGeometry geometry, ThreeMeshBasicMaterial material)
+			=> Create<ThreeMesh>(geometry, material);
+
+
+		protected override async ValueTask DisposeAsyncCore()
 		{
 			var helper = await Helper();
-			return new ThreeBoxGeometry(await helper.InvokeAsync<IJSObjectReference>("create", "BoxGeometry", width, height, depth), javaScript);
-		}
-		public async Task<ThreeMeshBasicMaterial> CreateMaterial(ThreeMeshMaterialOptions options)
-		{
-			var helper = await Helper();
-			return new ThreeMeshBasicMaterial(await helper.InvokeAsync<IJSObjectReference>("create", "MeshBasicMaterial", options), javaScript);
-		}
-		public async Task<ThreeMesh> CreateMesh(ThreeGeometry geometry, ThreeMeshMaterial material)
-		{
-			var helper = await Helper();
-			return new ThreeMesh(await helper.InvokeAsync<IJSObjectReference>("create", "Mesh", geometry.jsObject, material.jsObject), javaScript);
+			await helper.InvokeVoidAsync("clearAnimationFrameRequests");
+			executors.ForEach(x => x.Dispose());
+			await base.DisposeAsyncCore();
 		}
 
 		public async ValueTask RegisterAnimateFunction(Func<Task> action)
@@ -60,6 +72,7 @@ namespace ThreeNET
 				Function = action
 			};
 			var reference = DotNetObjectReference.Create(executor);
+			executors.Add(reference);
 			var helper = await Helper();
 			await helper.InvokeVoidAsync("helperRequestAnimationFrame", reference, "Execute", true);
 		}

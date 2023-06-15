@@ -3,9 +3,9 @@ using Microsoft.JSInterop;
 
 namespace ThreeNET.Objects
 {
-	internal class ThreeRenderer : ThreeObject
+	internal class ThreeWebGLRenderer : ThreeObject
 	{
-		public ThreeRenderer(IJSObjectReference jsObject, IJSRuntime jsRuntime)
+		public ThreeWebGLRenderer(IJSObjectReference jsObject, IJSRuntime jsRuntime)
 			: base(jsObject, jsRuntime)
 		{
 		}
@@ -15,7 +15,7 @@ namespace ThreeNET.Objects
 			await jsObject.InvokeVoidAsync("setSize", width, heigth);
 		}
 
-		public async ValueTask Render(ThreeScene scene, ThreeCamera camera)
+		public async ValueTask Render(ThreeScene scene, ThreePerspectiveCamera camera)
 		{
 			await jsObject.InvokeVoidAsync("render", scene.jsObject, camera.jsObject);
 		}
