@@ -12,7 +12,8 @@ namespace ThreeNET
 	internal class ThreeNET : ThreeHelperReferenceHolder
 	{
 		readonly List<DotNetObjectReference<InteropActionExecutor>> executors = new();
-		private static Regex ClassnameReplacementRegex { get; } = new("^Three", RegexOptions.Compiled);
+		private static Regex ClassnameReplacementRegex { get; } 
+			= new("^Three", RegexOptions.Compiled);
 		private readonly IJSRuntime javaScript;
 		public ThreeNET(IJSRuntime jsRuntime)
 			: base(jsRuntime)
@@ -20,16 +21,23 @@ namespace ThreeNET
 			javaScript = jsRuntime;
 		}
 
-		public async Task<T> Create<T>(params object[] additionalArguments) where T : ThreeObject
+		public async Task<T> Create<T>(params object[] additionalArguments) 
+			where T : ThreeObject
 		{
 			var type = typeof(T);
 			var helper = await Helper();
 			var name = ClassnameReplacementRegex.Replace(type.Name, "");
 			try
 			{
-				var objectRef = await helper.InvokeAsync<IJSObjectReference>("create", name, additionalArguments);
-				return (T)Activator.CreateInstance(type, new object[] { objectRef, javaScript })!;
-			}catch (Exception ex)
+				var objectRef = await helper.InvokeAsync<IJSObjectReference>("create",
+					name, additionalArguments);
+				return (T)Activator.CreateInstance(type,
+					new object[]
+					{
+						objectRef,
+						javaScript
+					})!;
+			} catch (Exception ex)
 			when (ex is JSException or NullReferenceException)
 			{
 				throw new InvalidOperationException(
@@ -37,25 +45,6 @@ namespace ThreeNET
 					$"{name} did not return a valid object.");
 			}
 		}
-
-		public async Task<ThreeScene> CreateScene()
-		{
-			return await Create<ThreeScene>();
-		}
-
-		public Task<ThreePerspectiveCamera> CreateCamera(int fieldOfView, int aspectRatio, double nearClip, decimal farClip)
-			=> Create<ThreePerspectiveCamera>(fieldOfView, aspectRatio, nearClip, farClip);
-
-		public Task<ThreeWebGLRenderer> CreateRenderer()
-			=> Create<ThreeWebGLRenderer>();
-
-		public Task<ThreeBoxGeometry> CreateBoxGeometry(int width, int height, int depth)
-			=> Create<ThreeBoxGeometry>(width, height, depth);
-		public Task<ThreeMeshBasicMaterial> CreateMaterial(ThreeMeshMaterialOptions options)
-			=> Create<ThreeMeshBasicMaterial>(options);
-		public Task<ThreeMesh> CreateMesh(ThreeGeometry geometry, ThreeMeshBasicMaterial material)
-			=> Create<ThreeMesh>(geometry, material);
-
 
 		protected override async ValueTask DisposeAsyncCore()
 		{
@@ -74,7 +63,11 @@ namespace ThreeNET
 			var reference = DotNetObjectReference.Create(executor);
 			executors.Add(reference);
 			var helper = await Helper();
-			await helper.InvokeVoidAsync("helperRequestAnimationFrame", reference, "Execute", true);
+			await helper.InvokeVoidAsync(
+				"helperRequestAnimationFrame",
+				reference,
+				"Execute",
+				true);
 		}
 
 		class InteropActionExecutor

@@ -1,4 +1,6 @@
 ﻿@using Microsoft.JSInterop;
+@using global::ThreeNET.Objects.Geometry;
+@using global::ThreeNET.Objects.Meshes.Materials;
 @inject ThreeNET three
 @implements IAsyncDisposable
 <h3>ThreeView</h3>
@@ -17,9 +19,9 @@
 	{
 		if (firstRender)
 		{
-			Scene = await three.CreateScene();
-			Camera = await three.CreateCamera(75, 1, 0.1, 1000);
-			Renderer = await three.CreateRenderer();
+			Scene = await three.Create<ThreeScene>();
+			Camera = await three.Create<ThreePerspectiveCamera>(75, 1, 0.1, 1000);
+			Renderer = await three.Create<ThreeWebGLRenderer>();
 			await Renderer.SetSize(400, 400);
 			await Renderer.PlaceInDOM(threeElement);
 
@@ -28,10 +30,10 @@
 					Color = 0xfcc43e,
 				};
 
-			await using var box = await three.CreateBoxGeometry(1, 1, 1);
-			await using var material = await three.CreateMaterial(options);
+			await using var box = await three.Create<ThreeBoxGeometry>(1, 1, 1);
+			await using var material = await three.Create<ThreeMeshBasicMaterial>(options);
 
-			BoxMesh = await three.CreateMesh(box, material);
+			BoxMesh = await three.Create<ThreeMesh>(box, material);
 			await Scene.Add(BoxMesh);
 			await Camera.SetPosition(z: 5);
 			await three.RegisterAnimateFunction(Animate);
