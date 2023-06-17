@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
@@ -15,15 +16,36 @@ namespace ThreeNET
 		private static Regex ClassnameReplacementRegex { get; }
 			= new("^Three", RegexOptions.Compiled);
 		private readonly IJSRuntime javaScript;
-		public ThreeNET(IJSRuntime jsRuntime)
+		private readonly ILogger logger;
+		public ThreeNET(IJSRuntime jsRuntime, ILogger<ThreeNET> logger)
 			: base(jsRuntime)
 		{
 			javaScript = jsRuntime;
+			this.logger = logger;
 		}
 
 		public async Task<T> Create<T>(params object[] additionalArguments)
 			where T : ThreeObject
 		{
+#if DEBUG
+			// In debug mode only:
+			// Do a check on the arguments.
+			foreach (var argument in additionalArguments)
+			{
+				// if argument is derived from ThreeObject you
+				// likely forgot to use it's "jsObject"
+				// (I spent hours debugging because I forgot to do that :facepalm:)
+				if (argument is ThreeObject)
+				{
+					var functionName = nameof(Create);
+					var objectName = nameof(ThreeObject);
+					var jorName = nameof(IJSObjectReference);
+					// log it as warning
+					logger.LogWarning("An argument of the {functionName} function is" +
+						" derived from {objectName}. Did you mean to use it's {jorName}?", functionName, objectName, jorName);
+				}
+			}
+#endif
 			var type = typeof(T);
 			var helper = await Helper();
 			var name = ClassnameReplacementRegex.Replace(type.Name, "");

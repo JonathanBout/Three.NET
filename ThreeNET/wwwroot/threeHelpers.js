@@ -33,10 +33,8 @@ export async function helperRequestAnimationFrame(dotnetObject, identifier, subs
 		}
 	}
 	requestAnimationFrame(async () => {
-		console.log('HERE');
 		await dotnetObject.invokeMethodAsync(identifier);
 		await helperRequestAnimationFrame(dotnetObject, identifier, false);
-		console.log('THERE');
 	});
 }
 export function clearAnimationFrameRequests() {
