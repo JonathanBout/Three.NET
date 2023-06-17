@@ -1,7 +1,13 @@
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.module.min.js"
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.module.js"
 
 export function create(className, ...parameters) {
-	return new THREE[className](...parameters)
+	if (parameters.length === 1) {
+		parameters = parameters[0];
+	}
+	if (parameters.length > 0) {
+		return new THREE[className](...parameters);
+	}
+	return new THREE[className]();
 }
 
 export function replaceDomElement(element, threeRenderer) {
@@ -27,10 +33,11 @@ export async function helperRequestAnimationFrame(dotnetObject, identifier, subs
 		}
 	}
 	requestAnimationFrame(async () => {
+		console.log('HERE');
 		await dotnetObject.invokeMethodAsync(identifier);
 		await helperRequestAnimationFrame(dotnetObject, identifier, false);
+		console.log('THERE');
 	});
-	console.log('HERE');
 }
 export function clearAnimationFrameRequests() {
 	subscribers.length = 0;

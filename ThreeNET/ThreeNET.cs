@@ -11,8 +11,8 @@ namespace ThreeNET
 {
 	internal class ThreeNET : ThreeHelperReferenceHolder
 	{
-		readonly List<DotNetObjectReference<InteropActionExecutor>> executors = new();
-		private static Regex ClassnameReplacementRegex { get; } 
+		readonly List<(InteropActionExecutor executor, DotNetObjectReference<InteropActionExecutor> reference)> executors = new();
+		private static Regex ClassnameReplacementRegex { get; }
 			= new("^Three", RegexOptions.Compiled);
 		private readonly IJSRuntime javaScript;
 		public ThreeNET(IJSRuntime jsRuntime)
@@ -21,7 +21,7 @@ namespace ThreeNET
 			javaScript = jsRuntime;
 		}
 
-		public async Task<T> Create<T>(params object[] additionalArguments) 
+		public async Task<T> Create<T>(params object[] additionalArguments)
 			where T : ThreeObject
 		{
 			var type = typeof(T);
@@ -48,9 +48,13 @@ namespace ThreeNET
 
 		protected override async ValueTask DisposeAsyncCore()
 		{
-			var helper = await Helper();
-			await helper.InvokeVoidAsync("clearAnimationFrameRequests");
-			executors.ForEach(x => x.Dispose());
+			//var helper = await Helper();
+			//await helper.InvokeVoidAsync("clearAnimationFrameRequests");
+			executors.ForEach(x =>
+			{
+				x.reference.Dispose();
+				x.executor.Dispose();
+			});
 			await base.DisposeAsyncCore();
 		}
 
@@ -61,7 +65,7 @@ namespace ThreeNET
 				Function = action
 			};
 			var reference = DotNetObjectReference.Create(executor);
-			executors.Add(reference);
+			executors.Add((executor, reference));
 			var helper = await Helper();
 			await helper.InvokeVoidAsync(
 				"helperRequestAnimationFrame",
@@ -70,11 +74,16 @@ namespace ThreeNET
 				true);
 		}
 
-		class InteropActionExecutor
+		class InteropActionExecutor : IDisposable
 		{
 			[DynamicDependency(nameof(Execute))]
 			public InteropActionExecutor() { }
 			public Func<Task> Function { get; set; } = () => Task.CompletedTask;
+
+			public void Dispose()
+			{
+				GC.SuppressFinalize(this);
+			}
 
 			[JSInvokable]
 			public async Task Execute()
