@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Diagnostics.CodeAnalysis;
@@ -12,16 +14,17 @@ namespace ThreeNET
 {
 	internal class ThreeNET : ThreeHelperReferenceHolder
 	{
-		readonly List<(InteropActionExecutor executor, DotNetObjectReference<InteropActionExecutor> reference)> executors = new();
 		private static Regex ClassnameReplacementRegex { get; }
 			= new("^Three", RegexOptions.Compiled);
 		private readonly IJSRuntime javaScript;
 		private readonly ILogger logger;
-		public ThreeNET(IJSRuntime jsRuntime, ILogger<ThreeNET> logger)
+		private readonly NavigationManager navigation;
+		public ThreeNET(IJSRuntime jsRuntime, ILogger<ThreeNET> logger, NavigationManager navigation)
 			: base(jsRuntime)
 		{
 			javaScript = jsRuntime;
 			this.logger = logger;
+			this.navigation = navigation;
 		}
 
 		public async Task<T> Create<T>(params object[] additionalArguments)
@@ -37,9 +40,9 @@ namespace ThreeNET
 				// (I spent hours debugging because I forgot to do that :facepalm:)
 				if (argument is ThreeObject)
 				{
-					var functionName = nameof(Create);
-					var objectName = nameof(ThreeObject);
-					var jorName = nameof(IJSObjectReference);
+					const string functionName = nameof(Create);
+					const string objectName = nameof(ThreeObject);
+					const string jorName = nameof(IJSObjectReference);
 					// log it as warning
 					logger.LogWarning("An argument of the {functionName} function is" +
 						" derived from {objectName}. Did you mean to use it's {jorName}?", functionName, objectName, jorName);
@@ -70,43 +73,41 @@ namespace ThreeNET
 
 		protected override async ValueTask DisposeAsyncCore()
 		{
-			//var helper = await Helper();
-			//await helper.InvokeVoidAsync("clearAnimationFrameRequests");
-			executors.ForEach(x =>
-			{
-				x.reference.Dispose();
-				x.executor.Dispose();
-			});
 			await base.DisposeAsyncCore();
 		}
 
-		public async ValueTask RegisterAnimateFunction(Func<Task> action)
+		private DotNetObjectReference<InteropActionExecutor>? __animationFrameExecutorReference;
+		private DotNetObjectReference<InteropActionExecutor>? AnimationFrameExecutorReference
+		{
+			get
+			{
+				return __animationFrameExecutorReference;
+			}
+			set
+			{
+				__animationFrameExecutorReference?.Dispose();
+				__animationFrameExecutorReference = value;
+			}
+		}
+		public async ValueTask RequestAnimationFrame(Func<Task> action)
 		{
 			var executor = new InteropActionExecutor
 			{
 				Function = action
 			};
-			var reference = DotNetObjectReference.Create(executor);
-			executors.Add((executor, reference));
+			AnimationFrameExecutorReference = DotNetObjectReference.Create(executor);
 			var helper = await Helper();
 			await helper.InvokeVoidAsync(
 				"helperRequestAnimationFrame",
-				reference,
-				"Execute",
-				true);
+				AnimationFrameExecutorReference,
+				"Execute");
 		}
 
-		class InteropActionExecutor : IDisposable
+		class InteropActionExecutor
 		{
 			[DynamicDependency(nameof(Execute))]
 			public InteropActionExecutor() { }
-			public Func<Task> Function { get; set; } = () => Task.CompletedTask;
-
-			public void Dispose()
-			{
-				GC.SuppressFinalize(this);
-			}
-
+			public Func<Task>? Function { get; set; }
 			[JSInvokable]
 			public async Task Execute()
 			{

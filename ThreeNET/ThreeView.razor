@@ -1,8 +1,10 @@
-﻿@using Microsoft.JSInterop;
+﻿@using Microsoft.Extensions.Logging;
+@using Microsoft.JSInterop;
 @using global::ThreeNET.Objects.Geometry;
 @using global::ThreeNET.Objects.Meshes.Materials;
 @inject ThreeNET three
 @inject IJSRuntime js
+@inject ILogger<ThreeView> logger
 @implements IAsyncDisposable
 <h3>ThreeView</h3>
 <div @ref=threeElement>
@@ -13,7 +15,7 @@
 	private ThreeScene? Scene { get; set; }
 	private ThreeWebGLRenderer? Renderer { get; set; }
 	private ThreeMesh? BoxMesh { get; set; }
-
+	private bool Disposed { get; set; }
 	private ElementReference threeElement;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -39,22 +41,33 @@
 			BoxMesh = await three.Create<ThreeMesh>(box.jsObject, material.jsObject);
 			await Scene.Add(BoxMesh);
 			await Camera.SetPosition(z: 5);
-			await three.RegisterAnimateFunction(Animate);
+			await three.RequestAnimationFrame(Animate);
 		}
 	}
 
 	public async Task Animate()
 	{
-		await Renderer!.Render(Scene!, Camera!);
-		var helper = await three.Helper();
-		await BoxMesh!.Rotate(x: Math.PI / 100, y: Math.PI / 80);
+		try
+		{
+			if (!Disposed)
+			{
+				await Renderer!.Render(Scene!, Camera!);
+				var helper = await three.Helper();
+				await BoxMesh!.Rotate(x: Math.PI / 100, y: Math.PI / 80);
+				await three.RequestAnimationFrame(Animate);
+			}
+		}catch (Exception ex)
+		{
+			logger.LogError(ex, null);
+		}
 	}
 
 	public async ValueTask DisposeAsync()
 	{
-		await (Camera?.DisposeAsync() ?? ValueTask.CompletedTask);
-		await (Scene?.DisposeAsync() ?? ValueTask.CompletedTask);
-		await (Renderer?.DisposeAsync() ?? ValueTask.CompletedTask);
-		await (BoxMesh?.DisposeAsync() ?? ValueTask.CompletedTask);
+		await Camera.DisposeOrDefaultAsync();
+		await Scene.DisposeOrDefaultAsync();
+		await Scene.DisposeOrDefaultAsync();
+		await BoxMesh.DisposeOrDefaultAsync();
+		Disposed = true;
 	}
 }

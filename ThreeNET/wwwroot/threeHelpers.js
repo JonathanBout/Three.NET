@@ -23,20 +23,9 @@ export function setProperty(object, identifier, value) {
 	tempObj[splits.slice(-1)] = value;
 }
 
-const subscribers = [];
-export async function helperRequestAnimationFrame(dotnetObject, identifier, subscribeIfNotFound) {
-	if (typeof subscribers[dotnetObject] === undefined || subscribers[dotnetObject] === null) {
-		if (subscribeIfNotFound) {
-			subscribers[dotnetObject] = identifier;
-		} else {
-			return;
-		}
-	}
+export async function helperRequestAnimationFrame(dotnetObject, identifier) {
 	requestAnimationFrame(async () => {
 		await dotnetObject.invokeMethodAsync(identifier);
-		await helperRequestAnimationFrame(dotnetObject, identifier, false);
+		console.log('animframe');
 	});
-}
-export function clearAnimationFrameRequests() {
-	subscribers.length = 0;
 }
