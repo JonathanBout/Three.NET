@@ -1,0 +1,7 @@
+{
+    "dotnet.defaultSolution": "ThreeNET.sln",
+    "dotnet.completion.provideRegexCompletions": true,
+    "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+    "dotnet.completion.showNameCompletionSuggestions": true,
+    "dotnet.implementType.propertyGenerationBehavior": "preferAutoProperties",
+}
