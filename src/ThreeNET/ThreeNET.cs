@@ -19,6 +19,21 @@ namespace ThreeNET
 		private readonly IJSRuntime javaScript;
 		private readonly ILogger logger;
 		private readonly NavigationManager navigation;
+
+		private DotNetObjectReference<InteropActionExecutor>? _animationFrameExecutorReference;
+		private DotNetObjectReference<InteropActionExecutor>? AnimationFrameExecutorReference
+		{
+			get
+			{
+				return _animationFrameExecutorReference;
+			}
+			set
+			{
+				_animationFrameExecutorReference?.Dispose();
+				_animationFrameExecutorReference = value;
+			}
+		}
+
 		public ThreeNET(IJSRuntime jsRuntime, ILogger<ThreeNET> logger, NavigationManager navigation)
 			: base(jsRuntime)
 		{
@@ -44,7 +59,7 @@ namespace ThreeNET
 					const string objectName = nameof(ThreeObject);
 					const string jorName = nameof(IJSObjectReference);
 					// log it as warning
-					logger.LogWarning("An argument of the {functionName} function is" +
+					logger.LogWarning("A provided argument of the {functionName} function is" +
 						" derived from {objectName}. Did you mean to use it's {jorName}?", functionName, objectName, jorName);
 				}
 			}
@@ -62,7 +77,8 @@ namespace ThreeNET
 						objectRef,
 						javaScript
 					})!;
-			} catch (Exception ex)
+			}
+			catch (Exception ex)
 			when (ex is JSException or NullReferenceException)
 			{
 				throw new InvalidOperationException(
@@ -71,24 +87,7 @@ namespace ThreeNET
 			}
 		}
 
-		protected override async ValueTask DisposeAsyncCore()
-		{
-			await base.DisposeAsyncCore();
-		}
 
-		private DotNetObjectReference<InteropActionExecutor>? __animationFrameExecutorReference;
-		private DotNetObjectReference<InteropActionExecutor>? AnimationFrameExecutorReference
-		{
-			get
-			{
-				return __animationFrameExecutorReference;
-			}
-			set
-			{
-				__animationFrameExecutorReference?.Dispose();
-				__animationFrameExecutorReference = value;
-			}
-		}
 		public async ValueTask RequestAnimationFrame(Func<Task> action)
 		{
 			var executor = new InteropActionExecutor
