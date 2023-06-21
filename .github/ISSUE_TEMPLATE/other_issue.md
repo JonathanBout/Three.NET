@@ -2,7 +2,7 @@
 name: Other issue
 about: An empty issue template, if none of the other templates fit
 title: ''
-labels: 'other'
+labels: ''
 assignees: ''
 
 ---
