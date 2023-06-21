@@ -1,10 +1,10 @@
 ---
 name: Other issue
-about: an empty issue template, if none of the oter issues fit.
+about: An empty issue template, if none of the other templates fit
 title: ''
-labels: ''
+labels: 'other'
 assignees: ''
 
 ---
-**Describe your issue**  
-Give a clear and concise description of your issue. For example: you should change the project's [..].
+### Describe your issue  
+Give a clear and concise description of your issue. For example: you should change the project's [...].
