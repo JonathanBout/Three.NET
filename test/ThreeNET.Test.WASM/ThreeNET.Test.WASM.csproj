@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ThreeNET\ThreeNET.csproj" />
+    <ProjectReference Include="..\..\src\ThreeNET\ThreeNET.csproj" />
   </ItemGroup>
 
 </Project>
