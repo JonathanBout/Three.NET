@@ -14,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{C801BA24-F375-4B5A-8884-FC54D733F88D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C801BA24-F375-4B5A-8884-FC54D733F88D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{A870D755-D923-4B23-8386-ED79BE9B64FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{DA9AA4CB-FB03-46D0-89CA-7B0C830C0C93} = {A870D755-D923-4B23-8386-ED79BE9B64FB}
 		{0BB53DCA-165A-42A5-87EC-D1898DA261D6} = {C801BA24-F375-4B5A-8884-FC54D733F88D}
 		{6AF85B80-86E1-4F1C-AEE1-2B3BFFE672F8} = {C801BA24-F375-4B5A-8884-FC54D733F88D}
 	EndGlobalSection

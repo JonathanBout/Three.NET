@@ -8,14 +8,32 @@ using ThreeNET;
 
 namespace ThreeNET.Objects
 {
-	internal abstract class ThreeObject : ThreeHelperReferenceHolder
+	public abstract class ThreeObject : IAsyncDisposable
 	{
-		internal readonly IJSObjectReference jsObject;
+		public IJSObjectReference ObjectReference { get; private set; } = null!;
 
-		protected ThreeObject(IJSObjectReference jsObject, IJSRuntime js)
-			: base(js)
+		public async ValueTask DisposeAsync()
 		{
-			this.jsObject = jsObject;
+			await DisposeAsyncCore();
+			await ObjectReference.DisposeAsync();
+
+			if (this is ThreeObjectWithReference referenceHolder)
+			{
+				await referenceHolder.HelperReference.DisposeAsync();
+			}
+
+			GC.SuppressFinalize(this);
 		}
+
+		public virtual ValueTask DisposeAsyncCore() => ValueTask.CompletedTask;
+		public virtual void SetObjectReference(IJSObjectReference objectReference)
+		{
+			ObjectReference = objectReference;
+		}
+	}
+
+	public abstract class ThreeObjectWithReference : ThreeObject
+	{
+		internal IJSObjectReference HelperReference { get; set; } = null!;
 	}
 }

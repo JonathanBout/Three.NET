@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace ThreeNET.Objects.Meshes.Materials
 {
-    internal class ThreeMeshBasicMaterial : ThreeMeshMaterial
+    public class ThreeMeshBasicMaterial : ThreeMeshMaterial
 	{
-		public ThreeMeshBasicMaterial(IJSObjectReference jsObject, IJSRuntime js) : base(jsObject, js)
-		{
-		}
 	}
 }

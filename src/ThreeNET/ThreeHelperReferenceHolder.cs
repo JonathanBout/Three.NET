@@ -2,17 +2,17 @@
 
 namespace ThreeNET
 {
-	abstract class ThreeHelperReferenceHolder : IAsyncDisposable
+	public abstract class ThreeHelperReferenceHolder : IAsyncDisposable
 	{
-		private readonly Lazy<Task<IJSObjectReference>> __threeJSHelperTask;
+		private readonly Lazy<Task<IJSObjectReference>> threeJSHelperTask;
 		public Task<IJSObjectReference> Helper()
 		{
-			return __threeJSHelperTask.Value;
+			return threeJSHelperTask.Value;
 		}
 
 		public ThreeHelperReferenceHolder(IJSRuntime jsRuntime)
 		{
-			__threeJSHelperTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
+			threeJSHelperTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
 				"import", "./_content/ThreeNET/threeHelpers.js").AsTask());
 		}
 
@@ -25,8 +25,8 @@ namespace ThreeNET
 
 		protected virtual async ValueTask DisposeAsyncCore()
 		{
-			if (__threeJSHelperTask.IsValueCreated)
-				await (await __threeJSHelperTask.Value).DisposeAsync().ConfigureAwait(false);
+			if (threeJSHelperTask.IsValueCreated)
+				await (await threeJSHelperTask.Value).DisposeAsync().ConfigureAwait(false);
 		}
 	}
 }

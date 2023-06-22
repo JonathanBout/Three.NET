@@ -38,7 +38,7 @@
 			{
 				color = options.HexColorString
 			});
-			BoxMesh = await three.Create<ThreeMesh>(box.jsObject, material.jsObject);
+			BoxMesh = await three.Create<ThreeMesh>(box.ObjectReference, material.ObjectReference);
 			await Scene.Add(BoxMesh);
 			await Camera.SetPosition(z: 5);
 			await three.RequestAnimationFrame(Animate);

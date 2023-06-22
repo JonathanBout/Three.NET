@@ -3,27 +3,21 @@ using Microsoft.JSInterop;
 
 namespace ThreeNET.Objects
 {
-	internal class ThreeWebGLRenderer : ThreeObject
+	public class ThreeWebGLRenderer : ThreeObjectWithReference
 	{
-		public ThreeWebGLRenderer(IJSObjectReference jsObject, IJSRuntime jsRuntime)
-			: base(jsObject, jsRuntime)
-		{
-		}
-
 		public async ValueTask SetSize(int width, int heigth)
 		{
-			await jsObject.InvokeVoidAsync("setSize", width, heigth);
+			await ObjectReference.InvokeVoidAsync("setSize", width, heigth);
 		}
 
 		public async ValueTask Render(ThreeScene scene, ThreePerspectiveCamera camera)
 		{
-			await jsObject.InvokeVoidAsync("render", scene.jsObject, camera.jsObject);
+			await ObjectReference.InvokeVoidAsync("render", scene.ObjectReference, camera.ObjectReference);
 		}
 
 		public async ValueTask PlaceInDOM(ElementReference element)
 		{
-			var helper = await Helper();
-			await helper.InvokeVoidAsync("replaceDomElement", element, jsObject);
+			await HelperReference.InvokeVoidAsync("replaceDomElement", element, ObjectReference);
 		}
 	}
 }

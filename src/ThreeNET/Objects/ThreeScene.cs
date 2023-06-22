@@ -4,16 +4,11 @@ using ThreeNET.Objects.Meshes;
 
 namespace ThreeNET.Objects
 {
-	internal class ThreeScene : ThreeObject
+	public class ThreeScene : ThreeObject
 	{
-		public ThreeScene(IJSObjectReference jsObject, IJSRuntime js)
-			: base(jsObject, js)
-		{
-		}
-
 		public async Task Add(ThreeMesh geometry)
 		{
-			await jsObject.InvokeVoidAsync("add", geometry.jsObject);
+			await ObjectReference.InvokeVoidAsync("add", geometry.ObjectReference);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace ThreeNET.Data
 {
-	internal class ThreeColor
+	public class ThreeColor
 	{
 		public ThreeColor() { }
 		public ThreeColor(double r, double g, double b)

@@ -29,3 +29,7 @@ export async function helperRequestAnimationFrame(dotnetObject, identifier) {
 		console.log('animframe');
 	});
 }
+
+export function getObjectRef(dotnetObject) {
+	return dotnetObject;
+}

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Implementation;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using ThreeNET.Data;
@@ -12,7 +13,7 @@ using ThreeNET.Objects.Meshes.Materials;
 
 namespace ThreeNET
 {
-	internal class ThreeNET : ThreeHelperReferenceHolder
+	public class ThreeNET : ThreeHelperReferenceHolder
 	{
 		private static Regex ClassnameReplacementRegex { get; }
 			= new("^Three", RegexOptions.Compiled);
@@ -20,17 +21,17 @@ namespace ThreeNET
 		private readonly ILogger logger;
 		private readonly NavigationManager navigation;
 
-		private DotNetObjectReference<InteropActionExecutor>? _animationFrameExecutorReference;
+		private DotNetObjectReference<InteropActionExecutor>? animationFrameExecutorReference;
 		private DotNetObjectReference<InteropActionExecutor>? AnimationFrameExecutorReference
 		{
 			get
 			{
-				return _animationFrameExecutorReference;
+				return animationFrameExecutorReference;
 			}
 			set
 			{
-				_animationFrameExecutorReference?.Dispose();
-				_animationFrameExecutorReference = value;
+				animationFrameExecutorReference?.Dispose();
+				animationFrameExecutorReference = value;
 			}
 		}
 
@@ -45,10 +46,35 @@ namespace ThreeNET
 		public async Task<T> Create<T>(params object[] additionalArguments)
 			where T : ThreeObject
 		{
+			ParameterCheck(additionalArguments);
+			var type = typeof(T);
+			var helper = await Helper();
+			var name = ClassnameReplacementRegex.Replace(type.Name, "");
+			try
+			{
+				var objectRef = await helper.InvokeAsync<IJSObjectReference>("create", name, additionalArguments);
+				var resultObject = await helper.InvokeAsync<T>("getObjectRef", objectRef);
+				resultObject.SetObjectReference(objectRef);
+				if (resultObject is ThreeObjectWithReference objWithRef)
+				{
+					objWithRef.HelperReference = await Helper();
+				}
+				return resultObject;
+			} catch (Exception ex)
+			  when (ex is JSException or NullReferenceException)
+			{
+				throw new InvalidOperationException(
+					"You might have chosen an invalid class, as trying to create a THREE." +
+					$"{name} did not return a valid object.");
+			}
+		}
+
+		private void ParameterCheck(object[] args)
+		{
 #if DEBUG
 			// In debug mode only:
 			// Do a check on the arguments.
-			foreach (var argument in additionalArguments)
+			foreach (var argument in args)
 			{
 				// if argument is derived from ThreeObject you
 				// likely forgot to use it's "jsObject"
@@ -64,29 +90,7 @@ namespace ThreeNET
 				}
 			}
 #endif
-			var type = typeof(T);
-			var helper = await Helper();
-			var name = ClassnameReplacementRegex.Replace(type.Name, "");
-			try
-			{
-				var objectRef = await helper.InvokeAsync<IJSObjectReference>("create",
-					name, additionalArguments);
-				return (T)Activator.CreateInstance(type,
-					new object[]
-					{
-						objectRef,
-						javaScript
-					})!;
-			}
-			catch (Exception ex)
-			when (ex is JSException or NullReferenceException)
-			{
-				throw new InvalidOperationException(
-					"You might have chosen an invalid class, as trying to create a THREE." +
-					$"{name} did not return a valid object.");
-			}
 		}
-
 
 		public async ValueTask RequestAnimationFrame(Func<Task> action)
 		{
