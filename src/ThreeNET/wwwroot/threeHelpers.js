@@ -1,5 +1,5 @@
 import * as THREE from './node_modules/three/build/three.module.min.js'
-export function create(className: string, ...parameters) {
+export function create(className, ...parameters) {
 	if (parameters.length === 1) {
 		parameters = parameters[0];
 	}
@@ -9,11 +9,11 @@ export function create(className: string, ...parameters) {
 	return new THREE[className]();
 }
 
-export function replaceDomElement(element: Element, threeRenderer) {
+export function replaceDomElement(element, threeRenderer) {
 	element.appendChild(threeRenderer.domElement);
 }
 
-export function setProperty(object, identifier: string, value) {
+export function setProperty(object, identifier, value) {
 	const splits = identifier.split('.');
 	let tempObj = object;
 	for (let i = 0; i < splits.length - 1; i++) {

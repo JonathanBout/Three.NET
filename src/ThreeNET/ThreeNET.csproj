@@ -10,15 +10,8 @@
 		<ItemGroup>
 			<NodeModules Include="$(SolutionDir)\src\ThreeNET\node_modules\**\*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(NodeModules)"
-			  DestinationFolder="./wwwroot/node_modules/%(RecursiveDir)"
-			  SkipUnchangedFiles="true"
-			  OverwriteReadOnlyFiles="true"/>
+		<Copy SourceFiles="@(NodeModules)" DestinationFolder="./wwwroot/node_modules/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
-
-	<ItemGroup>
-		<TypeScriptCompile Remove="wwwroot\threeHelpers.ts" />
-	</ItemGroup>
 
 
 	<ItemGroup>
@@ -31,9 +24,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.8" />
-		<PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.1.3">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 </Project>

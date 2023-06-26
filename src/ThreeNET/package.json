@@ -1,10 +1,5 @@
 {
   "dependencies": {
-    "@types/three": "^0.152.1",
     "three": "^0.152.1"
-  },
-  "devDependencies": {
-    "@microsoft/dotnet-js-interop": "^7.0.7",
-    "eslint": "^8.43.0"
   }
 }
