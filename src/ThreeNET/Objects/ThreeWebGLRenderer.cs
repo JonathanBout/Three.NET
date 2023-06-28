@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Numerics;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using ThreeNET.Data;
 
 namespace ThreeNET.Objects
 {
 	public class ThreeWebGLRenderer : ThreeObjectWithReference
 	{
-		public async ValueTask SetSize(int width, int heigth)
+		public async ValueTask SetSize(ThreeVector2 size)
 		{
-			await ObjectReference.InvokeVoidAsync("setSize", width, heigth);
+		 	await ObjectReference.InvokeVoidAsync("setSize", size.X, size.Y);
+		}
+
+		public async ValueTask<ThreeVector2> GetSize()
+		{
+			return await ObjectReference.InvokeAsync<ThreeVector2>("getSize");
 		}
 
 		public async ValueTask Render(ThreeScene scene, ThreePerspectiveCamera camera)
