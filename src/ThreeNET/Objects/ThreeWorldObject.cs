@@ -12,7 +12,7 @@ namespace ThreeNET.Objects
 	{
 		const string setPropertyFunction = "setProperty";
 
-		public async ValueTask SetRotation(double? x = null, double? y = null, double? z = null)
+		public async ValueTask SetRotation(float? x = null, float? y = null, float? z = null)
 		{
 
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
@@ -30,7 +30,7 @@ namespace ThreeNET.Objects
 					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "rotation.z", z);
 			}
 		}
-		public async ValueTask SetPosition(double? x = null, double? y = null, double? z = null)
+		public async ValueTask SetPosition(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
@@ -46,7 +46,7 @@ namespace ThreeNET.Objects
 					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "position.z", z);
 			}
 		}
-		public async ValueTask SetScale(double? x = null, double? y = null, double? z = null)
+		public async ValueTask SetScale(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
@@ -63,7 +63,7 @@ namespace ThreeNET.Objects
 			}
 		}
 
-		public async ValueTask Rotate(double? x = null, double? y = null, double? z = null)
+		public async ValueTask Rotate(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
@@ -74,7 +74,7 @@ namespace ThreeNET.Objects
 			if (!zNull)
 				await ObjectReference.InvokeVoidAsync("rotateZ", z);
 		}
-		public async ValueTask Translate(double? x = null, double? y = null, double? z = null)
+		public async ValueTask Translate(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 

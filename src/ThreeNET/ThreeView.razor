@@ -53,7 +53,7 @@
 			{
 				await Renderer!.Render(Scene!, Camera!);
 				var helper = await three.Helper();
-				await BoxMesh!.Rotate(x: Math.PI / 100, y: Math.PI / 80);
+				await BoxMesh!.Rotate(x: MathF.PI / 100, y: MathF.PI / 80f);
 				await three.RequestAnimationFrame(Animate);
 			}
 		}catch (Exception ex)
