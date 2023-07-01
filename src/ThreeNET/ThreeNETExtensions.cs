@@ -6,7 +6,7 @@ namespace ThreeNET
 	{
 		public static IServiceCollection AddThreeNET(this IServiceCollection serviceCollection)
 		{
-			return serviceCollection.AddTransient<ThreeNET>();
+			return serviceCollection.AddTransient<ThreeJSInterop>();
 		}
 	}
 }

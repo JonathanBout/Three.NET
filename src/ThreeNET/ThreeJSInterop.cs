@@ -13,7 +13,7 @@ using ThreeNET.Objects.Meshes.Materials;
 
 namespace ThreeNET
 {
-    public class ThreeNET : ThreeHelperReferenceHolder
+    public class ThreeJSInterop : ThreeHelperReferenceHolder
     {
         private static Regex ClassnameReplacementRegex { get; }
             = new("^Three", RegexOptions.Compiled);
@@ -34,7 +34,7 @@ namespace ThreeNET
             }
         }
 
-        public ThreeNET(IJSRuntime jsRuntime, ILogger<ThreeNET> logger, NavigationManager navigation)
+        public ThreeJSInterop(IJSRuntime jsRuntime, ILogger<ThreeJSInterop> logger, NavigationManager navigation)
             : base(jsRuntime)
         {
             javaScript = jsRuntime;

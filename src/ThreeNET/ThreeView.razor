@@ -1,8 +1,8 @@
 ﻿@using Microsoft.Extensions.Logging;
 @using Microsoft.JSInterop;
-@using global::ThreeNET.Objects.Geometry;
-@using global::ThreeNET.Objects.Meshes.Materials;
-@inject ThreeNET Three
+@using ThreeNET.Objects.Geometry;
+@using ThreeNET.Objects.Meshes.Materials;
+@inject ThreeJSInterop Three
 @inject IJSRuntime JS
 @inject ILogger<ThreeView> Logger
 @implements IAsyncDisposable
@@ -52,7 +52,7 @@
 			lastAnimateTime = DateTime.UtcNow;
 			await (Startup?.Invoke()).GetAwaiterOrDefault();
 
-			await three.RequestAnimationFrame(Animate);
+			await Three.RequestAnimationFrame(Animate);
 		}
 	}
 
@@ -67,11 +67,11 @@
 				await Renderer!.Render(Scene!, Camera!);
 				await (Update?.Invoke(DateTime.UtcNow - lastAnimateTime)).GetAwaiterOrDefault();
 				lastAnimateTime = DateTime.UtcNow;
-				await three.RequestAnimationFrame(Animate);
+				await Three.RequestAnimationFrame(Animate);
 			}
 		}catch (Exception ex)
 		{
-			logger.LogError(ex, null);
+			Logger.LogError(ex, null);
 		}finally
 		{
 			semaphoreSlim.Release();
