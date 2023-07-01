@@ -6,7 +6,7 @@ namespace ThreeNET
 	{
 		public static IServiceCollection AddThreeNET(this IServiceCollection serviceCollection)
 		{
-			return serviceCollection.AddScoped<ThreeNET>();
+			return serviceCollection.AddTransient<ThreeNET>();
 		}
 	}
 }

@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using ThreeNET.Test.WASM;
-using ThreeNET;
 
-internal class Program
+namespace ThreeNET.Test.WASM;
+
+internal static class Program
 {
 	private static async Task Main(string[] args)
 	{

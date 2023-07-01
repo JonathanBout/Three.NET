@@ -12,78 +12,72 @@ namespace ThreeNET.Objects
 	{
 		const string setPropertyFunction = "setProperty";
 
-		public async ValueTask SetRotation(float? x = null, float? y = null, float? z = null)
+		public ValueTask SetRotation(float? x = null, float? y = null, float? z = null)
 		{
 
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 
 			if (!xNull && !yNull && !zNull)
-				await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "rotation", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("rotation", new ThreeVector3(x!.Value, y!.Value, z!.Value));
 			else
 			{
 				if (!xNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "rotation.x", x);
+					return SetProperty("rotation.x", x);
 				if (!yNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "rotation.y", y);
+					return SetProperty("rotation.y", y);
 				if (!zNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "rotation.z", z);
+					return SetProperty("rotation.z", z);
 			}
+			return ValueTask.CompletedTask;
 		}
-		public async ValueTask SetPosition(float? x = null, float? y = null, float? z = null)
+		public ValueTask SetPosition(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
-				await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "position", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("position", new ThreeVector3(x!.Value, y!.Value, z!.Value));
 			else
 			{
 				if (!xNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "position.x", x);
+					return SetProperty("position.x", x);
 				if (!yNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "position.y", y);
+					return SetProperty("position.y", y);
 				if (!zNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "position.z", z);
+					return SetProperty("position.z", z);
 			}
+			return ValueTask.CompletedTask;
 		}
-		public async ValueTask SetScale(float? x = null, float? y = null, float? z = null)
+		public ValueTask SetScale(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
-				await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "scale", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("scale", new ThreeVector3(x!.Value, y!.Value, z!.Value));
 			else
 			{
 				if (!xNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "scale.x", x);
+					return SetProperty("scale.x", x);
 				if (!yNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "scale.y", y);
+					return SetProperty("scale.y", y);
 				if (!zNull)
-					await HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, "scale.z", z);
+					return SetProperty("scale.z", z);
 			}
+			return ValueTask.CompletedTask;
 		}
 
-		public async ValueTask Rotate(float? x = null, float? y = null, float? z = null)
+		public ValueTask Rotate(ThreeVector3 rotation)
 		{
-			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
-
-			if (!xNull)
-				await ObjectReference.InvokeVoidAsync("rotateX", x);
-			if (!yNull)
-				await ObjectReference.InvokeVoidAsync("rotateY", y);
-			if (!zNull)
-				await ObjectReference.InvokeVoidAsync("rotateZ", z);
+			return ObjectReference.InvokeVoidAsync("rotateOnWorldAxis", rotation.Normalize(), rotation.Magnitude);
 		}
-		public async ValueTask Translate(float? x = null, float? y = null, float? z = null)
+		public ValueTask Translate(ThreeVector3 translation)
 		{
-			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
+			return ObjectReference.InvokeVoidAsync("translateOnAxis", translation.Normalize(), translation.Magnitude);
+		}
 
-			if (!xNull)
-				await ObjectReference.InvokeVoidAsync("translateX", x);
-			if (!yNull)
-				await ObjectReference.InvokeVoidAsync("translateY", y);
-			if (!zNull)
-				await ObjectReference.InvokeVoidAsync("translateZ", z);
+		private ValueTask SetProperty(string propertyName, params object?[]? args)
+		{
+			return HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, propertyName, args);
 		}
 
 		static (bool xNull, bool yNull, bool zNull) ValuesCheck(double? x, double? y, double? z)
@@ -91,7 +85,7 @@ namespace ThreeNET.Objects
 			var xNull = x is null;
 			var yNull = y is null;
 			var zNull = z is null;
-			if (xNull && yNull && zNull) throw new InvalidOperationException("You should specify at least one value.");
+			if (xNull && yNull && zNull) throw new ArgumentException("You should specify at least one value.");
 			return (xNull, yNull, zNull);
 		}
 	}

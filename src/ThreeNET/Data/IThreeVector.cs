@@ -2,6 +2,11 @@
 {
 	internal interface IThreeVector<TSelf> : IEquatable<TSelf>, IComparable<TSelf> where TSelf : IThreeVector<TSelf>
 	{
+		public abstract static TSelf Zero { get; }
+		public abstract static TSelf One { get; }
+		public abstract static TSelf Up { get; }
+		public abstract static TSelf Left { get; }
+		public abstract static TSelf Forward { get; }
 		public float Magnitude { get; }
 		public float MagnitudeSquared { get; }
 		public TSelf Normalize();

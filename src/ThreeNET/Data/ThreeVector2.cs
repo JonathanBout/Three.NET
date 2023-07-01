@@ -4,6 +4,8 @@ namespace ThreeNET.Data
 {
 	public readonly struct ThreeVector2 : IThreeVector<ThreeVector2>
 	{
+		public ThreeVector2()
+			:this(0, 0) { }
 		public ThreeVector2(float x, float y)
 		{
 			X = x;
@@ -17,6 +19,20 @@ namespace ThreeNET.Data
 		public float MagnitudeSquared => X * X + Y * Y;
 
 		public float Magnitude => MathF.Sqrt(MagnitudeSquared);
+
+		private static ThreeVector2? zero;
+		private static ThreeVector2? one;
+		private static ThreeVector2? up;
+		private static ThreeVector2? left;
+		public static ThreeVector2 Zero => zero ??= new ThreeVector2(0, 0);
+
+		public static ThreeVector2 One => one ??= new ThreeVector2(1, 1);
+
+		public static ThreeVector2 Up => up ??= new ThreeVector2(0, 1);
+
+		public static ThreeVector2 Left => left ??= new ThreeVector2(1, 0);
+
+		public static ThreeVector2 Forward => Zero;
 
 		public override bool Equals(object? obj)
 			=> obj is ThreeVector2 vector && Equals(vector);

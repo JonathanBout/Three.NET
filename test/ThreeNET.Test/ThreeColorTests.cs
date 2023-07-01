@@ -1,8 +1,7 @@
 namespace ThreeNET.Test
 {
-	public class Tests
+	public class ThreeColorTests
 	{
-		// TODO: Add more unit tests
 		[Test]
 		public void ThreeColorFromInteger()
 		{

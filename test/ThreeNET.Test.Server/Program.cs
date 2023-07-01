@@ -1,6 +1,6 @@
-using ThreeNET;
+namespace ThreeNET.Test.Server;
 
-internal class Program
+internal static class Program
 {
 	private static void Main(string[] args)
 	{
@@ -12,8 +12,6 @@ internal class Program
 
 		if (!app.Environment.IsDevelopment())
 			app.UseHsts();
-
-		app.UseHttpsRedirection();
 
 		app.UseStaticFiles();
 

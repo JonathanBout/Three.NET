@@ -2,9 +2,9 @@
 @using Microsoft.JSInterop;
 @using global::ThreeNET.Objects.Geometry;
 @using global::ThreeNET.Objects.Meshes.Materials;
-@inject ThreeNET three
-@inject IJSRuntime js
-@inject ILogger<ThreeView> logger
+@inject ThreeNET Three
+@inject IJSRuntime JS
+@inject ILogger<ThreeView> Logger
 @implements IAsyncDisposable
 <h3>ThreeView</h3>
 <div @ref=threeElement>
@@ -16,15 +16,23 @@
 	private ThreeWebGLRenderer? Renderer { get; set; }
 	private ThreeMesh? BoxMesh { get; set; }
 	private bool Disposed { get; set; }
+	private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
 	private ElementReference threeElement;
+
+	[Parameter]
+	public Func<TimeSpan, Task>? Update { get; set; }
+	[Parameter]
+	public Func<Task>? Startup {get; set; }
+	[Parameter]
+	public Func<Task>? Shutdown { get; set; }
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
 		{
-			Scene = await three.Create<ThreeScene>();
-			Camera = await three.Create<ThreePerspectiveCamera>(75, 1, 0.1, 1000);
-			Renderer = await three.Create<ThreeWebGLRenderer>();
+			Scene = await Three.Create<ThreeScene>();
+			Camera = await Three.Create<ThreePerspectiveCamera>(75, 1, 0.1, 1000);
+			Renderer = await Three.Create<ThreeWebGLRenderer>();
 			await Renderer.SetSize(400, 400);
 			await Renderer.PlaceInDOM(threeElement);
 
@@ -33,41 +41,57 @@
 				Color = 0xfcc43e,
 			};
 
-			var box = await three.Create<ThreeBoxGeometry>(1, 1, 1);
-			var material = await three.Create<ThreeMeshBasicMaterial>(new
+			var box = await Three.Create<ThreeBoxGeometry>(1, 1, 1);
+			var material = await Three.Create<ThreeMeshBasicMaterial>(new
 			{
 				color = options.HexColorString
 			});
-			BoxMesh = await three.Create<ThreeMesh>(box.ObjectReference, material.ObjectReference);
+			BoxMesh = await Three.Create<ThreeMesh>(box.ObjectReference, material.ObjectReference);
 			await Scene.Add(BoxMesh);
 			await Camera.SetPosition(z: 5);
+			lastAnimateTime = DateTime.UtcNow;
+			await (Startup?.Invoke()).GetAwaiterOrDefault();
+
 			await three.RequestAnimationFrame(Animate);
 		}
 	}
 
+	private DateTime lastAnimateTime;
 	public async Task Animate()
 	{
+		await semaphoreSlim.WaitAsync();
 		try
 		{
 			if (!Disposed)
 			{
 				await Renderer!.Render(Scene!, Camera!);
-				var helper = await three.Helper();
-				await BoxMesh!.Rotate(x: MathF.PI / 100, y: MathF.PI / 80f);
+				await (Update?.Invoke(DateTime.UtcNow - lastAnimateTime)).GetAwaiterOrDefault();
+				lastAnimateTime = DateTime.UtcNow;
 				await three.RequestAnimationFrame(Animate);
 			}
 		}catch (Exception ex)
 		{
 			logger.LogError(ex, null);
+		}finally
+		{
+			semaphoreSlim.Release();
 		}
 	}
 
 	public async ValueTask DisposeAsync()
 	{
-		await Camera.DisposeOrDefaultAsync();
-		await Scene.DisposeOrDefaultAsync();
-		await Scene.DisposeOrDefaultAsync();
-		await BoxMesh.DisposeOrDefaultAsync();
-		Disposed = true;
+		await semaphoreSlim.WaitAsync();
+		try
+		{
+			await (Shutdown?.Invoke()).GetAwaiterOrDefault();
+			Disposed = true;
+			await Camera.DisposeOrDefaultAsync();
+			await Scene.DisposeOrDefaultAsync();
+			await Scene.DisposeOrDefaultAsync();
+			await BoxMesh.DisposeOrDefaultAsync();
+		}finally
+		{
+			semaphoreSlim.Release();
+		}
 	}
 }
