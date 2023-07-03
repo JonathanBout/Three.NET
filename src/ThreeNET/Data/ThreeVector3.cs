@@ -91,7 +91,7 @@ namespace ThreeNET.Data
 
 	public static class Euler
 	{
-		const float DegToRad = MathF.PI / 180;
+		private const float DegToRad = MathF.PI / 180;
 		public static ThreeVector3 FromDegrees(float x = 0, float y = 0, float z = 0)
 		{
 			return new ThreeVector3(x * DegToRad, y * DegToRad, z * DegToRad);

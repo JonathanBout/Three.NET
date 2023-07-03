@@ -16,13 +16,13 @@
 	private ThreeWebGLRenderer? Renderer { get; set; }
 	private ThreeMesh? BoxMesh { get; set; }
 	private bool Disposed { get; set; }
-	private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+	private SemaphoreSlim semaphoreSlim = new(1, 1);
 	private ElementReference threeElement;
 
 	[Parameter]
 	public Func<TimeSpan, Task>? Update { get; set; }
 	[Parameter]
-	public Func<Task>? Startup {get; set; }
+	public Func<Task>? Startup { get; set; }
 	[Parameter]
 	public Func<Task>? Shutdown { get; set; }
 
@@ -37,9 +37,10 @@
 			await Renderer.PlaceInDOM(threeElement);
 
 			ThreeMeshMaterialOptions options = new()
-			{
-				Color = 0xfcc43e,
-			};
+				{
+					Color = 0xfcc43e,
+				};
+
 
 			var box = await Three.Create<ThreeBoxGeometry>(1, 1, 1);
 			var material = await Three.Create<ThreeMeshBasicMaterial>(new
@@ -69,10 +70,10 @@
 				lastAnimateTime = DateTime.UtcNow;
 				await Three.RequestAnimationFrame(Animate);
 			}
-		}catch (Exception ex)
+		} catch (Exception ex)
 		{
 			Logger.LogError(ex, null);
-		}finally
+		} finally
 		{
 			semaphoreSlim.Release();
 		}
@@ -89,7 +90,7 @@
 			await Scene.DisposeOrDefaultAsync();
 			await Scene.DisposeOrDefaultAsync();
 			await BoxMesh.DisposeOrDefaultAsync();
-		}finally
+		} finally
 		{
 			semaphoreSlim.Release();
 		}

@@ -1,4 +1,4 @@
-﻿namespace ThreeNET.Data.Tests
+﻿namespace ThreeNET.Test
 {
     public class ThreeVector2Tests
     {

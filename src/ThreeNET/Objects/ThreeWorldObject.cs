@@ -10,7 +10,7 @@ namespace ThreeNET.Objects
 {
 	public abstract class ThreeWorldObject : ThreeObjectWithReference
 	{
-		const string setPropertyFunction = "setProperty";
+		private const string SetPropertyFunction = "setProperty";
 
 		public ValueTask SetRotation(float? x = null, float? y = null, float? z = null)
 		{
@@ -20,49 +20,42 @@ namespace ThreeNET.Objects
 
 			if (!xNull && !yNull && !zNull)
 				return SetProperty("rotation", new ThreeVector3(x!.Value, y!.Value, z!.Value));
-			else
-			{
-				if (!xNull)
-					return SetProperty("rotation.x", x);
-				if (!yNull)
-					return SetProperty("rotation.y", y);
-				if (!zNull)
-					return SetProperty("rotation.z", z);
-			}
+			if (!xNull)
+				return SetProperty("rotation.x", x);
+			if (!yNull)
+				return SetProperty("rotation.y", y);
+			if (!zNull)
+				return SetProperty("rotation.z", z);
 			return ValueTask.CompletedTask;
 		}
+
 		public ValueTask SetPosition(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
 				return SetProperty("position", new ThreeVector3(x!.Value, y!.Value, z!.Value));
-			else
-			{
-				if (!xNull)
-					return SetProperty("position.x", x);
-				if (!yNull)
-					return SetProperty("position.y", y);
-				if (!zNull)
-					return SetProperty("position.z", z);
-			}
+			if (!xNull)
+				return SetProperty("position.x", x);
+			if (!yNull)
+				return SetProperty("position.y", y);
+			if (!zNull)
+				return SetProperty("position.z", z);
 			return ValueTask.CompletedTask;
 		}
+
 		public ValueTask SetScale(float? x = null, float? y = null, float? z = null)
 		{
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
 				return SetProperty("scale", new ThreeVector3(x!.Value, y!.Value, z!.Value));
-			else
-			{
-				if (!xNull)
-					return SetProperty("scale.x", x);
-				if (!yNull)
-					return SetProperty("scale.y", y);
-				if (!zNull)
-					return SetProperty("scale.z", z);
-			}
+			if (!xNull)
+				return SetProperty("scale.x", x);
+			if (!yNull)
+				return SetProperty("scale.y", y);
+			if (!zNull)
+				return SetProperty("scale.z", z);
 			return ValueTask.CompletedTask;
 		}
 
@@ -77,10 +70,10 @@ namespace ThreeNET.Objects
 
 		private ValueTask SetProperty(string propertyName, params object?[]? args)
 		{
-			return HelperReference.InvokeVoidAsync(setPropertyFunction, ObjectReference, propertyName, args);
+			return HelperReference.InvokeVoidAsync(SetPropertyFunction, ObjectReference, propertyName, args);
 		}
 
-		static (bool xNull, bool yNull, bool zNull) ValuesCheck(double? x, double? y, double? z)
+		private static (bool xNull, bool yNull, bool zNull) ValuesCheck(double? x, double? y, double? z)
 		{
 			var xNull = x is null;
 			var yNull = y is null;
