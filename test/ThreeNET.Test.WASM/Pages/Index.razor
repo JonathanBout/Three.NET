@@ -1,4 +1,23 @@
 ﻿@page "/"
 
 <h1>Hello, world!</h1>
-<ThreeView />
+<ThreeView Update=Update Startup=Startup Shutdown=Shutdown />
+
+@code {
+	private Task Update(TimeSpan time)
+	{
+		Console.WriteLine("Update. Frame Time: " + time);
+		return Task.CompletedTask;
+	}
+
+	private Task Startup()
+	{
+		Console.WriteLine("Start!");
+		return Task.CompletedTask;
+	}
+
+	private Task Shutdown()
+	{
+		throw new Exception("Wen Hit?");
+	}
+}
