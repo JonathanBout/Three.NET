@@ -4,7 +4,11 @@ using Microsoft.JSInterop.Implementation;
 
 namespace ThreeNET.Objects
 {
-	public class ThreePerspectiveCamera : ThreeWorldObject
+	public class ThreePerspectiveCamera : ThreeCamera
+	{
+	}
+
+	public class ThreeOrtographicCamera : ThreeCamera
 	{
 	}
 }

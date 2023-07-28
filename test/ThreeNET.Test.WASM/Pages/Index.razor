@@ -1,23 +1,25 @@
 ﻿@page "/"
+@using ThreeNET.Arguments;
 
 <h1>Hello, world!</h1>
 <ThreeView Update=Update Startup=Startup Shutdown=Shutdown />
 
 @code {
-	private Task Update(TimeSpan time)
+	private Task Update(UpdateParameters parameters)
 	{
-		Console.WriteLine("Update. Frame Time: " + time);
+		Console.WriteLine("Update. Frame Time: " + parameters.FrameTime);
 		return Task.CompletedTask;
 	}
 
-	private Task Startup()
+	private Task Startup(StartupParameters parameters)
 	{
 		Console.WriteLine("Start!");
 		return Task.CompletedTask;
 	}
 
-	private Task Shutdown()
+	private Task Shutdown(ShutdownParameters parameters)
 	{
-		throw new Exception("Wen Hit?");
+		Console.WriteLine("Stop!");
+		return Task.CompletedTask;
 	}
 }

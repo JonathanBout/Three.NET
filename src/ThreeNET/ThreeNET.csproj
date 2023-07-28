@@ -10,7 +10,7 @@
 		<ItemGroup>
 			<NodeModules Include="$(SolutionDir)\src\ThreeNET\node_modules\**\*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(NodeModules)" DestinationFolder="./wwwroot/node_modules/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="@(NodeModules)" DestinationFolder="$(SolutionDir)\src\ThreeNET\wwwroot\node_modules\%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 	</Target>
 
 

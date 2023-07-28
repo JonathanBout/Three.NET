@@ -1,6 +1,10 @@
 ﻿namespace ThreeNET.Data
 {
-	internal interface IThreeVector<TSelf> : IEquatable<TSelf>, IComparable<TSelf> where TSelf : IThreeVector<TSelf>
+	/// <summary>
+	/// The base for all ThreeJS interop vectors.
+	/// </summary>
+	/// <typeparam name="TSelf">The type of the vector itself.</typeparam>
+	internal interface IVector<TSelf> : IEquatable<TSelf>, IComparable<TSelf>, IFormattable where TSelf : IVector<TSelf>
 	{
 		public static abstract TSelf Zero { get; }
 		public static abstract TSelf One { get; }

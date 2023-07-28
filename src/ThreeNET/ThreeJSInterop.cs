@@ -79,7 +79,11 @@ namespace ThreeNET
 				// if argument is derived from ThreeObject you
 				// likely forgot to use it's "jsObject"
 				// (I spent hours debugging because I forgot to do that :face-palm:)
-				if (argument is not ThreeObject) continue;
+				if (argument is not ThreeObject)
+				{
+					continue;
+				}
+
 				const string functionName = nameof(Create);
 				const string objectName = nameof(ThreeObject);
 				const string jorName = nameof(IJSObjectReference);
@@ -119,7 +123,7 @@ namespace ThreeNET
 			[JSInvokable]
 			public Task Execute()
 			{
-				return (Function?.Invoke() ?? Task.CompletedTask);
+				return Function?.Invoke() ?? Task.CompletedTask;
 			}
 		}
 	}

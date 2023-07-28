@@ -1,16 +1,25 @@
 {
   "iisSettings": {
     "iisExpress": {
-      "applicationUrl": "http://localhost:4583",
-      "sslPort": 44326
+      "applicationUrl": "http://localhost:55780",
+      "sslPort": 44379
     }
   },
   "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5071",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7011;http://localhost:7010",
+      "applicationUrl": "https://localhost:7270;http://localhost:5071",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

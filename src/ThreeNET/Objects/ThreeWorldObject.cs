@@ -19,7 +19,7 @@ namespace ThreeNET.Objects
 
 
 			if (!xNull && !yNull && !zNull)
-				return SetProperty("rotation", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("rotation", new Vector3(x!.Value, y!.Value, z!.Value));
 			if (!xNull)
 				return SetProperty("rotation.x", x);
 			if (!yNull)
@@ -34,7 +34,7 @@ namespace ThreeNET.Objects
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
-				return SetProperty("position", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("position", new Vector3(x!.Value, y!.Value, z!.Value));
 			if (!xNull)
 				return SetProperty("position.x", x);
 			if (!yNull)
@@ -49,7 +49,7 @@ namespace ThreeNET.Objects
 			var (xNull, yNull, zNull) = ValuesCheck(x, y, z);
 
 			if (!xNull && !yNull && !zNull)
-				return SetProperty("scale", new ThreeVector3(x!.Value, y!.Value, z!.Value));
+				return SetProperty("scale", new Vector3(x!.Value, y!.Value, z!.Value));
 			if (!xNull)
 				return SetProperty("scale.x", x);
 			if (!yNull)
@@ -59,11 +59,11 @@ namespace ThreeNET.Objects
 			return ValueTask.CompletedTask;
 		}
 
-		public ValueTask Rotate(ThreeVector3 rotation)
+		public ValueTask Rotate(Vector3 rotation)
 		{
 			return ObjectReference.InvokeVoidAsync("rotateOnWorldAxis", rotation.Normalize(), rotation.Magnitude);
 		}
-		public ValueTask Translate(ThreeVector3 translation)
+		public ValueTask Translate(Vector3 translation)
 		{
 			return ObjectReference.InvokeVoidAsync("translateOnAxis", translation.Normalize(), translation.Magnitude);
 		}
